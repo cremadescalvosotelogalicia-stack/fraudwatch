@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { loginSchema, type LoginInput } from "@/lib/validators";
 import { InputField, SubmitButton, Alert } from "@/components/forms/AuthFields";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/cases";
@@ -100,5 +100,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-20"><p className="text-sm text-surface-900/40">Cargando...</p></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
