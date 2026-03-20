@@ -1,14 +1,19 @@
-import DOMPurify from "isomorphic-dompurify";
-
 /**
  * Sanitizes a string to prevent XSS attacks.
- * Strips all HTML tags and dangerous attributes.
+ * Strips all HTML tags and trims whitespace.
+ * Lightweight alternative to DOMPurify for serverless environments.
  */
 export function sanitizeText(input: string): string {
-  return DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: [],
-    ALLOWED_ATTR: [],
-  }).trim();
+  return input
+    .replace(/<[^>]*>/g, "") // Strip HTML tags
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/on\w+\s*=/gi, "") // Strip event handlers like onclick=
+    .replace(/javascript\s*:/gi, "") // Strip javascript: protocol
+    .trim();
 }
 
 /**
