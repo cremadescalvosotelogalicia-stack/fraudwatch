@@ -1,43 +1,62 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const vars = {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? "SET (" + process.env.NEXT_PUBLIC_SUPABASE_URL.substring(0, 20) + "...)" : "MISSING",
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "SET (length: " + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length + ")" : "MISSING",
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? "SET (length: " + process.env.SUPABASE_SERVICE_ROLE_KEY.length + ")" : "MISSING",
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "MISSING",
-  };
+  const steps: Record<string, string> = {};
 
-  // Test Supabase connection
-  let supabaseTest = "NOT_TESTED";
-  try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } }
-    );
-    const { data, error } = await supabase.from("profiles").select("id").limit(1);
-    supabaseTest = error ? "ERROR: " + error.message : "OK (connected)";
-  } catch (e: unknown) {
-    supabaseTest = "EXCEPTION: " + (e instanceof Error ? e.message : String(e));
-  }
+  // Step 1: Env vars
+  steps["1_env_SUPABASE_URL"] = process.env.NEXT_PUBLIC_SUPABASE_URL ? "OK" : "MISSING";
+  steps["1_env_SERVICE_KEY"] = process.env.SUPABASE_SERVICE_ROLE_KEY ? "OK" : "MISSING";
 
-  // Test Zod
-  let zodTest = "NOT_TESTED";
+  // Step 2: Zod
   try {
     const { registerSchema } = await import("@/lib/validators");
     const result = registerSchema.safeParse({
-      email: "test@test.com",
-      password: "TestPass123",
-      alias: "testuser",
-      acceptTerms: true,
-      acceptPrivacy: true,
+      email: "test@test.com", password: "TestPass123",
+      alias: "testuser", acceptTerms: true, acceptPrivacy: true,
     });
-    zodTest = result.success ? "OK" : "VALIDATION_ERROR: " + JSON.stringify(result.error.issues);
+    steps["2_zod"] = result.success ? "OK" : "FAIL: " + JSON.stringify(result.error.issues);
   } catch (e: unknown) {
-    zodTest = "EXCEPTION: " + (e instanceof Error ? e.message : String(e));
+    steps["2_zod"] = "ERROR: " + (e instanceof Error ? e.message : String(e));
   }
 
-  return NextResponse.json({ vars, supabaseTest, zodTest }, { status: 200 });
+  // Step 3: sanitizeObject
+  try {
+    const { sanitizeObject } = await import("@/lib/sanitize");
+    const cleaned = sanitizeObject({ email: "test@test.com", password: "Test123", alias: "test" });
+    steps["3_sanitize"] = "OK: " + JSON.stringify(cleaned);
+  } catch (e: unknown) {
+    steps["3_sanitize"] = "ERROR: " + (e instanceof Error ? e.stack || e.message : String(e));
+  }
+
+  // Step 4: Supabase admin client
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("profiles").select("id").limit(1);
+    steps["4_supabase_query"] = error ? "ERROR: " + error.message : "OK";
+  } catch (e: unknown) {
+    steps["4_supabase_query"] = "ERROR: " + (e instanceof Error ? e.message : String(e));
+  }
+
+  // Step 5: Check if profiles table has proper columns
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.from("profiles").select("id, alias").limit(1);
+    steps["5_profiles_schema"] = error ? "ERROR: " + error.message : "OK: " + JSON.stringify(data);
+  } catch (e: unknown) {
+    steps["5_profiles_schema"] = "ERROR: " + (e instanceof Error ? e.message : String(e));
+  }
+
+  // Step 6: Check consent_logs table
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const { error } = await supabase.from("consent_logs").select("id").limit(1);
+    steps["6_consent_logs"] = error ? "ERROR: " + error.message : "OK";
+  } catch (e: unknown) {
+    steps["6_consent_logs"] = "ERROR: " + (e instanceof Error ? e.message : String(e));
+  }
+
+  return NextResponse.json(steps, { status: 200 });
 }
