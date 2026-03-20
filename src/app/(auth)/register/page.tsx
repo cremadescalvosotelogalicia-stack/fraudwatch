@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { registerSchema, type RegisterInput } from "@/lib/validators";
+import { registerSchema } from "@/lib/validators";
 import { InputField, CheckboxField, SubmitButton, Alert } from "@/components/forms/AuthFields";
+import { OAuthButtons, OAuthDivider } from "@/components/forms/OAuthButtons";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -52,11 +53,11 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/login?registered=true");
+    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="text-center">
         <h1 className="font-display text-2xl font-bold tracking-tight text-surface-950">
           Crear cuenta gratis
@@ -66,6 +67,11 @@ export default function RegisterPage() {
         </p>
       </div>
 
+      {/* OAuth buttons */}
+      <OAuthButtons redirectTo="/cases" />
+      <OAuthDivider />
+
+      {/* Email/password form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         {globalError && <Alert type="error" message={globalError} />}
 
@@ -128,7 +134,7 @@ export default function RegisterPage() {
         </div>
 
         <SubmitButton loading={loading} loadingText="Creando cuenta...">
-          Crear cuenta
+          Crear cuenta con email
         </SubmitButton>
       </form>
 

@@ -6,11 +6,14 @@ import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { loginSchema, type LoginInput } from "@/lib/validators";
 import { InputField, SubmitButton, Alert } from "@/components/forms/AuthFields";
+import { OAuthButtons, OAuthDivider } from "@/components/forms/OAuthButtons";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/cases";
+  const registered = searchParams.get("registered");
+  const callbackError = searchParams.get("error");
 
   const [form, setForm] = useState<LoginInput>({ email: "", password: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
@@ -45,7 +48,11 @@ function LoginForm() {
     });
 
     if (error) {
-      setGlobalError("Credenciales incorrectas. Revisa tu email y contrasena.");
+      if (error.message.includes("Email not confirmed")) {
+        setGlobalError("Tu email aun no ha sido verificado. Revisa tu bandeja de entrada.");
+      } else {
+        setGlobalError("Credenciales incorrectas. Revisa tu email y contrasena.");
+      }
       setLoading(false);
       return;
     }
@@ -55,7 +62,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="text-center">
         <h1 className="font-display text-2xl font-bold tracking-tight text-surface-950">
           Iniciar sesion
@@ -65,6 +72,25 @@ function LoginForm() {
         </p>
       </div>
 
+      {registered && (
+        <Alert
+          type="success"
+          message="Cuenta creada. Revisa tu email para verificar tu cuenta antes de iniciar sesion."
+        />
+      )}
+
+      {callbackError === "auth_callback_failed" && (
+        <Alert
+          type="error"
+          message="Error al iniciar sesion con el proveedor externo. Intentalo de nuevo."
+        />
+      )}
+
+      {/* OAuth buttons */}
+      <OAuthButtons redirectTo={next} />
+      <OAuthDivider />
+
+      {/* Email/password form */}
       <form onSubmit={handleSubmit} className="space-y-5">
         {globalError && <Alert type="error" message={globalError} />}
 
@@ -89,7 +115,7 @@ function LoginForm() {
         />
 
         <SubmitButton loading={loading} loadingText="Iniciando sesion...">
-          Iniciar sesion
+          Iniciar sesion con email
         </SubmitButton>
       </form>
 
@@ -105,7 +131,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-20"><p className="text-sm text-surface-900/40">Cargando...</p></div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-20">
+          <p className="text-sm text-surface-900/40">Cargando...</p>
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );
