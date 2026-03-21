@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 interface Stats {
-  totals: { users: number; cases: number; claims: number; documents: number };
+  totals: { users: number; cases: number; claims: number };
   casesByStatus: Record<string, number>;
   casesByCategory: Record<string, number>;
   recentUsers: { id: string; alias: string; role: string; created_at: string }[];
@@ -19,11 +19,10 @@ interface Stats {
 }
 
 const STATUS_LABELS: Record<string, string> = {
+  recruiting: "Reclutando afectados",
   open: "Abierto",
-  under_review: "En revision",
   closed: "Cerrado",
-  won: "Ganado",
-  lost: "Perdido",
+  rejected: "Rechazado",
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -72,9 +71,8 @@ export default function AdminDashboard() {
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-10">
         <StatCard label="Total usuarios" value={stats.totals.users} color="brand" />
-        <StatCard label="Casos activos" value={stats.totals.cases} color="blue" />
-        <StatCard label="Reclamaciones" value={stats.totals.claims} color="green" />
-        <StatCard label="Documentos" value={stats.totals.documents} color="amber" />
+        <StatCard label="Total casos" value={stats.totals.cases} color="blue" />
+        <StatCard label="Total afectados inscritos" value={stats.totals.claims} color="green" />
       </div>
 
       {/* Cases breakdown */}

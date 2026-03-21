@@ -8,12 +8,11 @@ export async function GET() {
 
   const supabase = createAdminClient();
 
-  const [usersRes, casesRes, claimsRes, evidencesRes, recentUsersRes, recentCasesRes] =
+  const [usersRes, casesRes, claimsRes, recentUsersRes, recentCasesRes] =
     await Promise.all([
       supabase.from("profiles").select("*", { count: "exact", head: true }),
       supabase.from("cases").select("*", { count: "exact", head: true }),
       supabase.from("claims").select("*", { count: "exact", head: true }),
-      supabase.from("evidences").select("*", { count: "exact", head: true }),
       supabase
         .from("profiles")
         .select("id, alias, role, created_at")
@@ -51,7 +50,6 @@ export async function GET() {
       users: usersRes.count || 0,
       cases: casesRes.count || 0,
       claims: claimsRes.count || 0,
-      documents: evidencesRes.count || 0,
     },
     casesByStatus: statusCounts,
     casesByCategory: categoryCounts,

@@ -13,7 +13,7 @@ export async function GET(
   const { id } = await params;
   const supabase = createAdminClient();
 
-  const [caseRes, claimsRes, evidencesRes] = await Promise.all([
+  const [caseRes, claimsRes] = await Promise.all([
     supabase
       .from("cases")
       .select("*, profiles(alias)")
@@ -24,31 +24,15 @@ export async function GET(
       .select("*, profiles(alias)")
       .eq("case_id", id)
       .order("created_at", { ascending: false }),
-    supabase
-      .from("evidences")
-      .select("*, profiles(alias)")
-      .eq("claim_id", id),
   ]);
 
   if (caseRes.error) {
     return NextResponse.json({ error: "Caso no encontrado" }, { status: 404 });
   }
 
-  // Get evidences for all claims of this case
-  const claimIds = (claimsRes.data || []).map((c) => c.id);
-  let allEvidences: unknown[] = [];
-  if (claimIds.length > 0) {
-    const { data: evs } = await supabase
-      .from("evidences")
-      .select("*, profiles(alias)")
-      .in("claim_id", claimIds);
-    allEvidences = evs || [];
-  }
-
   return NextResponse.json({
     case: caseRes.data,
     claims: claimsRes.data || [],
-    evidences: allEvidences,
   });
 }
 

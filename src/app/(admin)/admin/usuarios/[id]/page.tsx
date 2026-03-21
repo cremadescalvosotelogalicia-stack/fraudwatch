@@ -33,14 +33,6 @@ interface UserDetail {
     created_at: string;
     claims: { count: number }[];
   }[];
-  evidences: {
-    id: string;
-    file_name: string;
-    file_size: number;
-    mime_type: string;
-    storage_path: string;
-    created_at: string;
-  }[];
   consents: {
     id: string;
     consent_type: string;
@@ -52,7 +44,7 @@ interface UserDetail {
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  open: "Abierto", under_review: "En revision", closed: "Cerrado", won: "Ganado", lost: "Perdido",
+  recruiting: "Reclutando afectados", open: "Abierto", closed: "Cerrado", rejected: "Rechazado",
 };
 
 const CONSENT_LABELS: Record<string, string> = {
@@ -87,16 +79,6 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
       prev ? { ...prev, profile: { ...prev.profile, role: newRole } } : prev
     );
     setUpdatingRole(false);
-  }
-
-  async function downloadFile(storagePath: string, fileName: string) {
-    const res = await fetch("/api/admin/documents", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storagePath }),
-    });
-    const { url } = await res.json();
-    if (url) window.open(url, "_blank");
   }
 
   if (loading) {
@@ -185,10 +167,6 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
             <p className="text-2xl font-bold text-surface-950">{totalClaimed.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}</p>
             <p className="text-xs text-surface-500">Total reclamado</p>
           </div>
-          <div>
-            <p className="text-2xl font-bold text-surface-950">{data.evidences.length}</p>
-            <p className="text-xs text-surface-500">Documentos</p>
-          </div>
         </div>
       </div>
 
@@ -271,41 +249,6 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
       )}
-
-      {/* Evidences */}
-      <div className="rounded-xl border border-surface-200 bg-white p-6 mb-6">
-        <h2 className="text-sm font-semibold text-surface-700 mb-4">Documentos ({data.evidences.length})</h2>
-        {data.evidences.length === 0 ? (
-          <p className="text-sm text-surface-400">Sin documentos</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-surface-200 text-sm">
-              <thead>
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Archivo</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Tipo</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Fecha</th>
-                  <th className="px-3 py-2 text-center text-xs font-semibold text-surface-500 uppercase">Accion</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-100">
-                {data.evidences.map((ev) => (
-                  <tr key={ev.id} className="hover:bg-surface-50">
-                    <td className="px-3 py-2 font-medium">{ev.file_name}</td>
-                    <td className="px-3 py-2 text-surface-500 font-mono text-xs">{ev.mime_type}</td>
-                    <td className="px-3 py-2 text-surface-400">{new Date(ev.created_at).toLocaleDateString("es-ES")}</td>
-                    <td className="px-3 py-2 text-center">
-                      <button onClick={() => downloadFile(ev.storage_path, ev.file_name)} className="rounded bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100">
-                        Descargar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
 
       {/* Consent logs */}
       <div className="rounded-xl border border-surface-200 bg-white p-6">

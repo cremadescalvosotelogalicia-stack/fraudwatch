@@ -8,11 +8,9 @@ import { SubmitButton, Alert } from "@/components/forms/AuthFields";
 import type { Case, CaseStatus } from "@/types/database";
 
 const statusOptions: { value: CaseStatus; label: string }[] = [
+  { value: "recruiting", label: "Reclutando afectados" },
   { value: "open", label: "Abierto" },
-  { value: "under_review", label: "En revision" },
   { value: "closed", label: "Cerrado" },
-  { value: "won", label: "Ganado" },
-  { value: "lost", label: "Perdido" },
 ];
 
 export default function ManageCasePage() {

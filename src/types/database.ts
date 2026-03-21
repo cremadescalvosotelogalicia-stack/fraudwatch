@@ -1,4 +1,4 @@
-export type CaseStatus = "open" | "under_review" | "closed" | "won" | "lost";
+export type CaseStatus = "recruiting" | "open" | "closed" | "rejected";
 export type CaseCategory =
   | "investment_fraud"
   | "romance_scam"

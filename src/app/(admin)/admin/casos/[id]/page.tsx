@@ -28,24 +28,13 @@ interface CaseDetail {
     created_at: string;
     profiles: { alias: string } | null;
   }[];
-  evidences: {
-    id: string;
-    file_name: string;
-    file_size: number;
-    mime_type: string;
-    storage_path: string;
-    user_id: string;
-    created_at: string;
-    profiles: { alias: string } | null;
-  }[];
 }
 
 const STATUS_OPTIONS = [
+  { value: "recruiting", label: "Reclutando afectados" },
   { value: "open", label: "Abierto" },
-  { value: "under_review", label: "En revision" },
   { value: "closed", label: "Cerrado" },
-  { value: "won", label: "Ganado" },
-  { value: "lost", label: "Perdido" },
+  { value: "rejected", label: "Rechazado" },
 ];
 
 const CATEGORY_OPTIONS = [
@@ -66,6 +55,9 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ title: "", accused_company: "", description: "", category: "", status: "", is_public: true });
   const [message, setMessage] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejecting, setRejecting] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/cases/${id}`)
@@ -88,6 +80,12 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
   }, [id]);
 
   async function handleSave() {
+    // If changing to rejected, show modal instead of saving directly
+    if (editForm.status === "rejected" && data?.case.status !== "rejected") {
+      setShowRejectModal(true);
+      return;
+    }
+
     setSaving(true);
     setMessage("");
     const res = await fetch(`/api/admin/cases/${id}`, {
@@ -98,7 +96,6 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
     if (res.ok) {
       setMessage("Caso actualizado correctamente");
       setEditing(false);
-      // Refresh data
       const json = await fetch(`/api/admin/cases/${id}`).then((r) => r.json());
       setData(json);
     } else {
@@ -107,20 +104,37 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
     setSaving(false);
   }
 
+  async function handleConfirmReject() {
+    setRejecting(true);
+    setMessage("");
+
+    const res = await fetch(`/api/admin/cases/${id}/reject`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason: rejectReason }),
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      setMessage(`Caso rechazado. Se ha notificado a ${result.emailsSent || 0} afectado(s).`);
+      setShowRejectModal(false);
+      setEditing(false);
+      const json = await fetch(`/api/admin/cases/${id}`).then((r) => r.json());
+      setData(json);
+      if (json.case) {
+        setEditForm((prev) => ({ ...prev, status: json.case.status }));
+      }
+    } else {
+      const err = await res.json();
+      setMessage("Error al rechazar: " + (err.error || "Error desconocido"));
+    }
+    setRejecting(false);
+  }
+
   async function handleDelete() {
     if (!confirm("¿Seguro que quieres eliminar este caso? Esta accion no se puede deshacer.")) return;
     await fetch(`/api/admin/cases/${id}`, { method: "DELETE" });
     router.push("/admin/casos");
-  }
-
-  async function downloadFile(storagePath: string, fileName: string) {
-    const res = await fetch("/api/admin/documents", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storagePath }),
-    });
-    const { url } = await res.json();
-    if (url) window.open(url, "_blank");
   }
 
   if (loading) {
@@ -132,7 +146,7 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const c = data.case;
-  const totalAmount = data.claims.reduce((sum, cl) => sum + Number(cl.amount_defrauded), 0);
+  const totalAffected = data.claims.length;
 
   return (
     <AdminShell>
@@ -239,35 +253,33 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
         {/* Summary stats */}
         <div className="mt-6 flex gap-6 border-t border-surface-100 pt-4">
           <div>
-            <p className="text-2xl font-bold text-surface-950">{data.claims.length}</p>
-            <p className="text-xs text-surface-500">Reclamaciones</p>
+            <p className="text-2xl font-bold text-surface-950">{totalAffected}</p>
+            <p className="text-xs text-surface-500">Afectados inscritos</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-surface-950">{totalAmount.toLocaleString("es-ES", { style: "currency", currency: "EUR" })}</p>
-            <p className="text-xs text-surface-500">Importe total</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-surface-950">{data.evidences.length}</p>
-            <p className="text-xs text-surface-500">Documentos</p>
+            <p className="text-2xl font-bold text-surface-950">
+              {data.claims.reduce((sum, cl) => sum + Number(cl.amount_defrauded), 0).toLocaleString("es-ES", { style: "currency", currency: "EUR" })}
+            </p>
+            <p className="text-xs text-surface-500">Importe total reclamado</p>
           </div>
         </div>
       </div>
 
-      {/* Claims table */}
+      {/* Affected users table */}
       <div className="rounded-xl border border-surface-200 bg-white p-6 mb-6">
-        <h2 className="text-sm font-semibold text-surface-700 mb-4">Reclamaciones ({data.claims.length})</h2>
+        <h2 className="text-sm font-semibold text-surface-700 mb-4">Afectados inscritos ({data.claims.length})</h2>
         {data.claims.length === 0 ? (
-          <p className="text-sm text-surface-400">Sin reclamaciones</p>
+          <p className="text-sm text-surface-400">Sin afectados inscritos</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-surface-200 text-sm">
               <thead>
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Usuario</th>
-                  <th className="px-3 py-2 text-right text-xs font-semibold text-surface-500 uppercase">Importe</th>
+                  <th className="px-3 py-2 text-right text-xs font-semibold text-surface-500 uppercase">Importe reclamado</th>
                   <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Testimonio</th>
-                  <th className="px-3 py-2 text-center text-xs font-semibold text-surface-500 uppercase">Legal</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Fecha</th>
+                  <th className="px-3 py-2 text-center text-xs font-semibold text-surface-500 uppercase">Compartir con legal</th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Fecha inscripcion</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-100">
@@ -292,49 +304,65 @@ export default function AdminCaseDetailPage({ params }: { params: Promise<{ id: 
         )}
       </div>
 
-      {/* Evidences table */}
-      <div className="rounded-xl border border-surface-200 bg-white p-6">
-        <h2 className="text-sm font-semibold text-surface-700 mb-4">Documentos ({data.evidences.length})</h2>
-        {data.evidences.length === 0 ? (
-          <p className="text-sm text-surface-400">Sin documentos</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-surface-200 text-sm">
-              <thead>
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Archivo</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Tipo</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Usuario</th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-surface-500 uppercase">Fecha</th>
-                  <th className="px-3 py-2 text-center text-xs font-semibold text-surface-500 uppercase">Accion</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-100">
-                {data.evidences.map((ev) => (
-                  <tr key={ev.id} className="hover:bg-surface-50">
-                    <td className="px-3 py-2 font-medium">{ev.file_name}</td>
-                    <td className="px-3 py-2 text-surface-500 font-mono text-xs">{ev.mime_type}</td>
-                    <td className="px-3 py-2">
-                      <Link href={`/admin/usuarios/${ev.user_id}`} className="text-brand-700 hover:underline">
-                        {ev.profiles?.alias || ev.user_id.slice(0, 8)}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2 text-surface-400">{new Date(ev.created_at).toLocaleDateString("es-ES")}</td>
-                    <td className="px-3 py-2 text-center">
-                      <button
-                        onClick={() => downloadFile(ev.storage_path, ev.file_name)}
-                        className="rounded bg-brand-50 px-2 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
-                      >
-                        Descargar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Reject confirmation modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+            <div className="mb-6">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-600">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <h2 className="text-center text-xl font-bold text-surface-950">Rechazar caso</h2>
+              <p className="mt-2 text-center text-sm text-surface-500">
+                Esta accion es irreversible. Se enviara un email de notificacion a
+                <strong className="text-surface-700"> {data?.claims.length || 0} afectado(s)</strong> inscritos
+                y el caso dejara de ser visible en la plataforma.
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-surface-700 mb-2">
+                Motivo del rechazo (opcional, se incluira en el email)
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={3}
+                placeholder="Ej: El caso no cumple los requisitos minimos para ser tramitado en la plataforma..."
+                className="w-full rounded-lg border border-surface-200 px-4 py-2.5 text-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+              />
+            </div>
+
+            <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 mb-6">
+              <p className="text-sm text-amber-700">
+                <strong>Atencion:</strong> Al confirmar, se enviara automaticamente un email a cada afectado
+                indicandole que el caso ha sido rechazado. Asegurate de que esta es la decision correcta.
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowRejectModal(false); setRejectReason(""); }}
+                disabled={rejecting}
+                className="rounded-lg border border-surface-200 px-5 py-2.5 text-sm font-medium text-surface-600 hover:bg-surface-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmReject}
+                disabled={rejecting}
+                className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+              >
+                {rejecting ? "Rechazando y notificando..." : "Confirmar rechazo y notificar"}
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </AdminShell>
   );
 }

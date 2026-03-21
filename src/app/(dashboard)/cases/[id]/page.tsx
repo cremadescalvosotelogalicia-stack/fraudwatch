@@ -14,11 +14,10 @@ const categoryLabels: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
+  recruiting: "Reclutando afectados",
   open: "Abierto",
-  under_review: "En revision",
   closed: "Cerrado",
-  won: "Ganado",
-  lost: "Perdido",
+  rejected: "Rechazado",
 };
 
 interface Props {
@@ -132,7 +131,7 @@ export default async function CaseDetailPage({ params }: Props) {
       )}
 
       {/* Join / add claim */}
-      {user && !isOwner && !existingClaim && typedCase.status === "open" && (
+      {user && !isOwner && !existingClaim && (typedCase.status === "recruiting" || typedCase.status === "open") && (
         <Link
           href={`/cases/${id}/join`}
           className="block text-center rounded-xl bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800 transition-colors"

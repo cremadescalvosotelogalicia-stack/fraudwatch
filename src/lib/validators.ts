@@ -62,7 +62,9 @@ export const claimSchema = z.object({
     .string()
     .min(20, "El testimonio debe tener al menos 20 caracteres")
     .max(10000, "Máximo 10.000 caracteres"),
-  share_with_legal: z.boolean(),
+  share_with_legal: z.literal(true, {
+    message: "Debes autorizar compartir tus datos con el equipo legal para participar",
+  }),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

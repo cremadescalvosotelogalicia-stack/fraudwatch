@@ -11,19 +11,17 @@ const categoryLabels: Record<string, string> = {
 };
 
 const statusStyles: Record<string, string> = {
+  recruiting: "bg-blue-50 text-blue-700",
   open: "bg-emerald-50 text-emerald-700",
-  under_review: "bg-amber-50 text-amber-700",
   closed: "bg-surface-100 text-surface-500",
-  won: "bg-brand-50 text-brand-700",
-  lost: "bg-red-50 text-red-600",
+  rejected: "bg-red-50 text-red-600",
 };
 
 const statusLabels: Record<string, string> = {
+  recruiting: "Reclutando afectados",
   open: "Abierto",
-  under_review: "En revisión",
   closed: "Cerrado",
-  won: "Ganado",
-  lost: "Perdido",
+  rejected: "Rechazado",
 };
 
 interface CaseCardProps {

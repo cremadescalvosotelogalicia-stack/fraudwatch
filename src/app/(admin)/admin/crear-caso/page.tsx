@@ -14,8 +14,8 @@ const CATEGORY_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
+  { value: "recruiting", label: "Reclutando afectados" },
   { value: "open", label: "Abierto" },
-  { value: "under_review", label: "En revision" },
 ];
 
 export default function AdminCrearCasoPage() {
@@ -25,7 +25,7 @@ export default function AdminCrearCasoPage() {
     accused_company: "",
     description: "",
     category: "other",
-    status: "open",
+    status: "recruiting",
     is_public: true,
   });
   const [loading, setLoading] = useState(false);
