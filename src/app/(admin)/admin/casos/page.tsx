@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 
@@ -38,6 +37,9 @@ export default function AdminCasosPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<AdminCase | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchCases = useCallback(async () => {
     setLoading(true);
@@ -58,6 +60,16 @@ export default function AdminCasosPage() {
   }, [fetchCases]);
 
   const totalPages = Math.ceil(total / 20);
+
+  async function handleDeleteConfirm() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    await fetch(`/api/admin/cases/${deleteTarget.id}`, { method: "DELETE" });
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleting(false);
+    fetchCases();
+  }
 
   async function exportCsv() {
     const params = new URLSearchParams({ format: "csv" });
@@ -131,18 +143,21 @@ export default function AdminCasosPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-surface-500 uppercase tracking-wider">Creador</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-surface-500 uppercase tracking-wider">Reclamac.</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-surface-500 uppercase tracking-wider">Fecha</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-surface-500 uppercase tracking-wider w-16">
+                  <span className="sr-only">Eliminar</span>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-100">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-surface-400">
+                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-surface-400">
                     Cargando...
                   </td>
                 </tr>
               ) : cases.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-surface-400">
+                  <td colSpan={8} className="px-4 py-8 text-center text-sm text-surface-400">
                     No se encontraron casos
                   </td>
                 </tr>
@@ -169,6 +184,17 @@ export default function AdminCasosPage() {
                     </td>
                     <td className="px-4 py-3 text-sm text-surface-400">
                       {new Date(c.created_at).toLocaleDateString("es-ES")}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setDeleteTarget(c); setShowDeleteModal(true); }}
+                        title="Eliminar caso"
+                        className="rounded-md p-1.5 text-surface-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -202,6 +228,45 @@ export default function AdminCasosPage() {
             >
               Siguiente
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+            <div className="mb-6 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                <svg className="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-surface-950">Eliminar caso</h2>
+              <p className="mt-2 text-sm text-surface-500">
+                Se eliminar&aacute; permanentemente el caso <strong className="text-surface-700">&ldquo;{deleteTarget.title}&rdquo;</strong> contra <strong className="text-surface-700">{deleteTarget.accused_company}</strong>, incluyendo todas las reclamaciones asociadas.
+              </p>
+              <p className="mt-2 text-sm font-medium text-red-600">
+                Esta acci&oacute;n no se puede deshacer.
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeleteTarget(null); }}
+                disabled={deleting}
+                className="rounded-lg border border-surface-200 px-5 py-2.5 text-sm font-medium text-surface-600 hover:bg-surface-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={deleting}
+                className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+              >
+                {deleting ? "Eliminando..." : "Eliminar definitivamente"}
+              </button>
+            </div>
           </div>
         </div>
       )}

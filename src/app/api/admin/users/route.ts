@@ -99,6 +99,43 @@ export async function PATCH(request: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
+// DELETE: Delete one or multiple users
+export async function DELETE(request: NextRequest) {
+  const auth = await requireAdmin();
+  if ("error" in auth) return auth.error;
+
+  const body = await request.json();
+  const ids: string[] = Array.isArray(body.ids) ? body.ids : body.id ? [body.id] : [];
+
+  if (ids.length === 0) {
+    return NextResponse.json({ error: "No se proporcionaron IDs" }, { status: 400 });
+  }
+
+  const supabase = createAdminClient();
+  let deleted = 0;
+  const errors: string[] = [];
+
+  for (const userId of ids) {
+    // Delete claims first (foreign key)
+    await supabase.from("claims").delete().eq("user_id", userId);
+    // Delete consent logs
+    await supabase.from("consent_logs").delete().eq("user_id", userId);
+    // Delete evidences
+    await supabase.from("evidences").delete().eq("user_id", userId);
+    // Delete profile
+    await supabase.from("profiles").delete().eq("id", userId);
+    // Delete auth user
+    const { error } = await supabase.auth.admin.deleteUser(userId);
+    if (error) {
+      errors.push(`${userId}: ${error.message}`);
+    } else {
+      deleted++;
+    }
+  }
+
+  return NextResponse.json({ deleted, errors });
+}
+
 function usersToCsv(
   users: Record<string, unknown>[],
   emailMap: Map<string, string>
