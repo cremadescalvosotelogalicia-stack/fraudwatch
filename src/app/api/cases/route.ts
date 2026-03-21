@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       .insert({
         case_id: data.id,
         user_id: user.id,
-        amount_defrauded: 0,
+        amount_defrauded: 0.01,
         testimony: "Creador del caso",
         share_with_legal: true,
       });
