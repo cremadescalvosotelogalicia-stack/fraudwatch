@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
@@ -17,12 +18,16 @@ export function AdminSidebar() {
     <aside className="flex w-64 flex-col border-r border-surface-200 bg-white">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-surface-200 px-6 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-700 text-white font-bold text-sm">
-          CL
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Crowd Litigations"
+          width={36}
+          height={36}
+          className="rounded-lg"
+        />
         <div>
-          <p className="font-semibold text-surface-950 text-sm">CrowdLitigations</p>
-          <p className="text-xs text-surface-500">Panel de administracion</p>
+          <p className="font-semibold text-surface-950 text-sm">Crowd Litigations</p>
+          <p className="text-xs text-surface-500">Panel de administraci&oacute;n</p>
         </div>
       </div>
 
