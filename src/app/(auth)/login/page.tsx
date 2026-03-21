@@ -119,6 +119,10 @@ function LoginForm() {
         </SubmitButton>
       </form>
 
+      <Link href="/forgot-password" className="block text-center text-sm text-surface-900/40 hover:text-brand-700 transition-colors">
+        Olvidaste tu contrasena?
+      </Link>
+
       <p className="text-center text-sm text-surface-900/50">
         No tienes cuenta?{" "}
         <Link href="/register" className="font-semibold text-brand-700 hover:text-brand-800">
