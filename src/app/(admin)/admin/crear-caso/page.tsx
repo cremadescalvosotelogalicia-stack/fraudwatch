@@ -5,12 +5,9 @@ import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 const CATEGORY_OPTIONS = [
-  { value: "investment_fraud", label: "Fraude de inversion" },
-  { value: "romance_scam", label: "Estafa romantica" },
-  { value: "phishing", label: "Phishing" },
-  { value: "ecommerce_fraud", label: "Fraude ecommerce" },
-  { value: "rental_fraud", label: "Fraude alquiler" },
-  { value: "other", label: "Otros" },
+  { value: "tax_claims", label: "Reclamaciones tributarias" },
+  { value: "admin_claims", label: "Reclamaciones a la Administración" },
+  { value: "consumer_competition", label: "Consumo & Competencia" },
 ];
 
 const STATUS_OPTIONS = [
@@ -24,7 +21,7 @@ export default function AdminCrearCasoPage() {
     title: "",
     accused_company: "",
     description: "",
-    category: "other",
+    category: "tax_claims",
     status: "recruiting",
     is_public: true,
   });

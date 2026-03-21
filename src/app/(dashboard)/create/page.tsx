@@ -7,12 +7,9 @@ import { caseSchema, type CaseInput } from "@/lib/validators";
 import { InputField, TextareaField, CheckboxField, SubmitButton, Alert } from "@/components/forms/AuthFields";
 
 const categoryOptions = [
-  { value: "investment_fraud", label: "Fraude de inversion" },
-  { value: "romance_scam", label: "Estafa romantica" },
-  { value: "phishing", label: "Phishing" },
-  { value: "ecommerce_fraud", label: "Fraude en compras" },
-  { value: "rental_fraud", label: "Fraude de alquiler" },
-  { value: "other", label: "Otro" },
+  { value: "tax_claims", label: "Reclamaciones tributarias" },
+  { value: "admin_claims", label: "Reclamaciones a la Administración" },
+  { value: "consumer_competition", label: "Consumo & Competencia" },
 ];
 
 export default function CreateCasePage() {
@@ -22,7 +19,7 @@ export default function CreateCasePage() {
     title: "",
     accused_company: "",
     description: "",
-    category: "other",
+    category: "tax_claims",
     is_public: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});

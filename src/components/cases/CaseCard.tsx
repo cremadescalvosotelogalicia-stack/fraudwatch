@@ -2,12 +2,9 @@ import Link from "next/link";
 import type { Case } from "@/types/database";
 
 const categoryLabels: Record<string, string> = {
-  investment_fraud: "Fraude de inversión",
-  romance_scam: "Estafa romántica",
-  phishing: "Phishing",
-  ecommerce_fraud: "Fraude en compras",
-  rental_fraud: "Fraude de alquiler",
-  other: "Otro",
+  tax_claims: "Reclamaciones tributarias",
+  admin_claims: "Reclamaciones a la Administración",
+  consumer_competition: "Consumo & Competencia",
 };
 
 const statusStyles: Record<string, string> = {

@@ -5,12 +5,9 @@ import { useCallback } from "react";
 
 const CATEGORIES = [
   { value: "", label: "Todas las categorías" },
-  { value: "investment_fraud", label: "Fraude de inversión" },
-  { value: "romance_scam", label: "Estafa romántica" },
-  { value: "phishing", label: "Phishing" },
-  { value: "ecommerce_fraud", label: "Fraude en compras" },
-  { value: "rental_fraud", label: "Fraude de alquiler" },
-  { value: "other", label: "Otro" },
+  { value: "tax_claims", label: "Reclamaciones tributarias" },
+  { value: "admin_claims", label: "Reclamaciones a la Administración" },
+  { value: "consumer_competition", label: "Consumo & Competencia" },
 ];
 
 export function CaseFilters() {

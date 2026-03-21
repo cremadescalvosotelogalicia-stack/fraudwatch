@@ -26,12 +26,9 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-  investment_fraud: "Fraude de inversion",
-  romance_scam: "Estafa romantica",
-  phishing: "Phishing",
-  ecommerce_fraud: "Fraude ecommerce",
-  rental_fraud: "Fraude alquiler",
-  other: "Otros",
+  tax_claims: "Reclamaciones tributarias",
+  admin_claims: "Reclamaciones a la Administración",
+  consumer_competition: "Consumo & Competencia",
 };
 
 export default function AdminDashboard() {

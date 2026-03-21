@@ -13,20 +13,16 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 2. TIPOS PERSONALIZADOS
 -- ============================================================
 CREATE TYPE case_status AS ENUM (
+  'recruiting',
   'open',
-  'under_review',
   'closed',
-  'won',
-  'lost'
+  'rejected'
 );
 
 CREATE TYPE case_category AS ENUM (
-  'investment_fraud',
-  'romance_scam',
-  'phishing',
-  'ecommerce_fraud',
-  'rental_fraud',
-  'other'
+  'tax_claims',
+  'admin_claims',
+  'consumer_competition'
 );
 
 CREATE TYPE consent_type AS ENUM (

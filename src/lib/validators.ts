@@ -42,12 +42,9 @@ export const caseSchema = z.object({
     .min(50, "La descripción debe tener al menos 50 caracteres")
     .max(5000, "Máximo 5000 caracteres"),
   category: z.enum([
-    "investment_fraud",
-    "romance_scam",
-    "phishing",
-    "ecommerce_fraud",
-    "rental_fraud",
-    "other",
+    "tax_claims",
+    "admin_claims",
+    "consumer_competition",
   ]),
   is_public: z.boolean(),
 });

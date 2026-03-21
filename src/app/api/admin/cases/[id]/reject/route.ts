@@ -76,23 +76,23 @@ export async function POST(
     <p style="color:#888;font-size:14px;margin:4px 0 0;">Cremades &amp; Calvo-Sotelo</p>
   </div>
 
-  <h2 style="font-size:20px;color:#1a1a1a;">Actualizaci&oacute;n sobre tu caso</h2>
+  <h2 style="font-size:20px;color:#1a1a1a;">Informaci&oacute;n sobre tu caso</h2>
 
   <p>Estimado/a usuario/a,</p>
 
-  <p>Nos dirigimos a ti para informarte de que, tras un an&aacute;lisis detallado, el caso
+  <p>Tras la valoraci&oacute;n por parte de nuestro equipo letrado, lamentamos informarte de que el caso
   <strong>&ldquo;${caseData.title}&rdquo;</strong> contra <strong>${caseData.accused_company}</strong>
-  no cumple los requisitos necesarios para ser tramitado a trav&eacute;s de nuestra plataforma.</p>
+  no re&uacute;ne los requisitos necesarios para iniciar el proceso de reclamaci&oacute;n colectiva
+  a trav&eacute;s de nuestra plataforma.</p>
 
   ${reasonBlock}
 
-  <p>Queremos agradecerte sinceramente tu confianza y tu participaci&oacute;n. Sabemos que dar
-  el paso de unirse a una reclamaci&oacute;n colectiva no es f&aacute;cil, y valoramos enormemente
-  tu implicaci&oacute;n.</p>
+  <p>Queremos agradecerte sinceramente tu confianza al utilizar Crowd Litigations y tu participaci&oacute;n
+  en este caso. Sabemos que dar el paso de unirse a una reclamaci&oacute;n colectiva requiere compromiso,
+  y valoramos enormemente tu implicaci&oacute;n.</p>
 
-  <p>Si en el futuro surge un nuevo caso que pueda ser de tu inter&eacute;s, te lo haremos saber.
-  Mientras tanto, tu cuenta en la plataforma sigue activa y puedes seguir participando
-  en otros casos disponibles.</p>
+  <p>Tu cuenta en la plataforma sigue activa y puedes continuar participando en otros casos disponibles.
+  Si en el futuro surge un nuevo caso que pueda ser de tu inter&eacute;s, te lo haremos saber.</p>
 
   <p>Si tienes cualquier duda, no dudes en escribirnos a
   <a href="mailto:info@crowdlitigations.com" style="color:#6d28d9;">info@crowdlitigations.com</a>.</p>

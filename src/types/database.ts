@@ -1,11 +1,8 @@
 export type CaseStatus = "recruiting" | "open" | "closed" | "rejected";
 export type CaseCategory =
-  | "investment_fraud"
-  | "romance_scam"
-  | "phishing"
-  | "ecommerce_fraud"
-  | "rental_fraud"
-  | "other";
+  | "tax_claims"
+  | "admin_claims"
+  | "consumer_competition";
 export type ConsentType =
   | "terms_of_service"
   | "privacy_policy"
