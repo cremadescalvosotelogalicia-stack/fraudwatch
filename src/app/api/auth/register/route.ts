@@ -85,7 +85,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: "Error interno", detail: message }, { status: 500 });
   }
 }
