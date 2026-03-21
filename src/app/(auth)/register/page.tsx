@@ -68,7 +68,7 @@ export default function RegisterPage() {
       </div>
 
       {/* OAuth buttons */}
-      <OAuthButtons redirectTo="/cases" />
+      <OAuthButtons redirectTo="/hub" />
       <OAuthDivider />
 
       {/* Email/password form */}

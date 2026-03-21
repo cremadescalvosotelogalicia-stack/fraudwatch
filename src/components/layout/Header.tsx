@@ -41,6 +41,18 @@ export async function Header() {
           {user ? (
             <>
               <Link
+                href="/hub"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-surface-900/60 transition-colors hover:bg-surface-50 hover:text-surface-900"
+              >
+                Inicio
+              </Link>
+              <Link
+                href="/mis-reclamaciones"
+                className="rounded-lg px-3 py-2 text-sm font-medium text-surface-900/60 transition-colors hover:bg-surface-50 hover:text-surface-900"
+              >
+                Mis reclamaciones
+              </Link>
+              <Link
                 href="/cases"
                 className="rounded-lg px-3 py-2 text-sm font-medium text-surface-900/60 transition-colors hover:bg-surface-50 hover:text-surface-900"
               >

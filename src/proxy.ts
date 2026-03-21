@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PROTECTED_PATHS = ["/cases", "/create", "/profile"];
+const PROTECTED_PATHS = ["/hub", "/cases", "/create", "/profile", "/mis-reclamaciones"];
 const AUTH_PATHS = ["/login", "/register"];
 const ADMIN_PATHS = ["/admin"];
 
@@ -37,7 +37,7 @@ export async function proxy(request: NextRequest) {
 
   // Redirect logged-in users away from auth pages
   if (user && AUTH_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL("/cases", request.url));
+    return NextResponse.redirect(new URL("/hub", request.url));
   }
 
   // Redirect unauthenticated users away from protected pages

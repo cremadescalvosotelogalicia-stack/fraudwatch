@@ -7,7 +7,7 @@ interface OAuthButtonsProps {
   redirectTo?: string;
 }
 
-export function OAuthButtons({ redirectTo = "/cases" }: OAuthButtonsProps) {
+export function OAuthButtons({ redirectTo = "/hub" }: OAuthButtonsProps) {
   const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
   const supabase = createBrowserClient(
