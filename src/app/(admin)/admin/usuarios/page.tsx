@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 interface AdminUser {
@@ -132,8 +133,8 @@ export default function AdminUsuariosPage() {
               ) : (
                 users.map((u) => (
                   <tr key={u.id} className="hover:bg-surface-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-medium text-surface-900">
-                      {u.alias}
+                    <td className="px-4 py-3 text-sm font-medium text-brand-700 hover:underline">
+                      <Link href={`/admin/usuarios/${u.id}`}>{u.alias}</Link>
                     </td>
                     <td className="px-4 py-3 text-sm text-surface-600">
                       {u.email || "-"}

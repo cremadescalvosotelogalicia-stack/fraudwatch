@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
 
 interface AdminCase {
@@ -150,9 +152,9 @@ export default function AdminCasosPage() {
                 </tr>
               ) : (
                 cases.map((c) => (
-                  <tr key={c.id} className="hover:bg-surface-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-medium text-surface-900 max-w-[200px] truncate">
-                      {c.title}
+                  <tr key={c.id} className="hover:bg-surface-50 transition-colors cursor-pointer" onClick={() => window.location.href = `/admin/casos/${c.id}`}>
+                    <td className="px-4 py-3 text-sm font-medium text-brand-700 max-w-[200px] truncate hover:underline">
+                      <Link href={`/admin/casos/${c.id}`}>{c.title}</Link>
                     </td>
                     <td className="px-4 py-3 text-sm text-surface-600 max-w-[150px] truncate">
                       {c.accused_company}

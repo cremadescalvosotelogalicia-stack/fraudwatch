@@ -8,6 +8,16 @@ export async function Header() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    isAdmin = profile?.role === "admin" || profile?.role === "supervisor";
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-surface-200/60 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -45,6 +55,14 @@ export async function Header() {
               >
                 Perfil
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="rounded-lg bg-purple-50 px-3 py-2 text-sm font-medium text-purple-700 transition-colors hover:bg-purple-100"
+                >
+                  <span className="hidden sm:inline">Panel </span>Admin
+                </Link>
+              )}
               <form action={signOut}>
                 <button
                   type="submit"
@@ -60,7 +78,7 @@ export async function Header() {
                 href="/login"
                 className="rounded-lg px-3 py-2 text-sm font-medium text-surface-900/60 transition-colors hover:bg-surface-50 hover:text-surface-900"
               >
-                Iniciar sesión
+                Iniciar sesion
               </Link>
               <Link
                 href="/register"
