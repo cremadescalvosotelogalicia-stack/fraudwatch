@@ -77,7 +77,9 @@ export async function POST(request: Request) {
     }
 
     // 2. Auto-enroll the creator as the first affected person (claim)
-    const { error: claimError } = await supabase
+    //    Use admin client to bypass RLS policies
+    const adminSupabase = createAdminClient();
+    const { error: claimError } = await adminSupabase
       .from("claims")
       .insert({
         case_id: data.id,

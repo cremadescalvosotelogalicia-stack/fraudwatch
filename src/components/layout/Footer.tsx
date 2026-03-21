@@ -25,7 +25,7 @@ export function Footer() {
               Privacidad
             </Link>
             <span className="text-xs text-surface-900/30">·</span>
-            <span className="text-xs text-surface-900/40">dpo@crowdlitigations.com</span>
+            <span className="text-xs text-surface-900/40">info@crowdlitigations.com</span>
           </nav>
 
           <p className="text-xs text-surface-900/30">
