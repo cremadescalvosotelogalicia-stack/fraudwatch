@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const PROTECTED_PATHS = ["/cases", "/create", "/profile"];
 const AUTH_PATHS = ["/login", "/register"];
+const ADMIN_PATHS = ["/admin"];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -44,6 +45,23 @@ export async function proxy(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Admin routes: require auth + admin role
+  if (ADMIN_PATHS.some((p) => pathname.startsWith(p))) {
+    if (!user) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || !["admin", "supervisor"].includes(profile.role)) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return supabaseResponse;

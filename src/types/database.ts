@@ -12,11 +12,14 @@ export type ConsentType =
   | "data_sharing_legal_team"
   | "cookie_consent";
 
+export type UserRole = "client" | "admin" | "supervisor";
+
 export interface Profile {
   id: string;
   alias: string;
   avatar_url: string | null;
   is_verified: boolean;
+  role: UserRole;
   created_at: string;
   updated_at: string;
 }
