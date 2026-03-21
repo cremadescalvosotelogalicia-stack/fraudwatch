@@ -85,7 +85,7 @@ export async function POST(request: Request) {
         case_id: data.id,
         user_id: user.id,
         amount_defrauded: 0.01,
-        testimony: "Creador del caso",
+        testimony: "Creador del caso. Primer afectado inscrito en la plataforma.",
         share_with_legal: true,
       });
 
