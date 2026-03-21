@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FraudWatch — Organízate contra el fraude",
+  title: "Crowd Litigations — La union es tu fuerza",
   description:
-    "Plataforma para víctimas de fraude y estafas. Organízate colectivamente, aporta pruebas y ejerce tus derechos con garantías RGPD.",
+    "Plataforma de litigacion masiva. Defendemos lo que es tuyo. Reclamaciones tributarias, administrativas, de consumo y de competencia.",
 };
 
 export default function RootLayout({

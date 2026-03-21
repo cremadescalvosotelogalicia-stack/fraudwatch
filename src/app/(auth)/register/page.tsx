@@ -63,7 +63,7 @@ export default function RegisterPage() {
           Crear cuenta gratis
         </h1>
         <p className="mt-2 text-sm text-surface-900/50">
-          Unete a FraudWatch y protege tus derechos
+          Unete a Crowd Litigations y protege tus derechos
         </p>
       </div>
 

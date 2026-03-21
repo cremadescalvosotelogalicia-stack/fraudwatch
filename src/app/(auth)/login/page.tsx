@@ -68,7 +68,7 @@ function LoginForm() {
           Iniciar sesion
         </h1>
         <p className="mt-2 text-sm text-surface-900/50">
-          Accede a tu cuenta de FraudWatch
+          Accede a tu cuenta de Crowd Litigations
         </p>
       </div>
 

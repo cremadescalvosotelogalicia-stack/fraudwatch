@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function HeroSection() {
   return (
@@ -18,14 +19,15 @@ export function HeroSection() {
 
           {/* Headline */}
           <h1 className="font-display text-4xl tracking-tight text-surface-950 sm:text-5xl lg:text-6xl">
-            Organízate contra el fraude.{" "}
-            <span className="text-brand-700">Juntos somos más fuertes.</span>
+            La union es tu fuerza.{" "}
+            <span className="text-brand-700">Defendemos lo que es tuyo.</span>
           </h1>
 
           <p className="mt-6 text-lg text-surface-900/55 leading-relaxed max-w-2xl mx-auto">
-            FraudWatch es la plataforma para víctimas de estafas que permite
+            Crowd Litigations es la plataforma de litigacion masiva que permite
             unirse colectivamente, documentar pruebas de forma segura y ejercer
-            derechos legales con plenas garantías de privacidad.
+            derechos legales con plenas garantias de privacidad. Respaldada por
+            Cremades &amp; Calvo-Sotelo.
           </p>
 
           {/* CTAs */}
