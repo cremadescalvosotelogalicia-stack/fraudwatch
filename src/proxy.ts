@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 const PROTECTED_PATHS = ["/hub", "/cases", "/create", "/profile", "/mis-reclamaciones", "/masivas"];
+const PUBLIC_EXCEPTIONS = ["/masivas/patrimonio/reclamar"];
 const AUTH_PATHS = ["/login", "/register"];
 const ADMIN_PATHS = ["/admin"];
 
@@ -40,8 +41,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/hub", request.url));
   }
 
-  // Redirect unauthenticated users away from protected pages
-  if (!user && PROTECTED_PATHS.some((p) => pathname.startsWith(p))) {
+  // Redirect unauthenticated users away from protected pages (except public exceptions)
+  if (!user && !PUBLIC_EXCEPTIONS.some((p) => pathname.startsWith(p)) && PROTECTED_PATHS.some((p) => pathname.startsWith(p))) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
