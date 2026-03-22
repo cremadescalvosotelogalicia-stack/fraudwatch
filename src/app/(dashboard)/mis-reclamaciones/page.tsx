@@ -98,6 +98,41 @@ export default async function MisReclamacionesPage() {
         </p>
       </div>
 
+      {/* Reclamaciones Masivas card */}
+      <Link
+        href="/mis-reclamaciones/masivas"
+        className="group block rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-amber-100/50 p-6 transition-all hover:shadow-lg hover:border-amber-300 hover:shadow-amber-100/30"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="inline-block rounded-full bg-amber-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+                Masivas
+              </span>
+            </div>
+            <h2 className="mt-2 text-lg font-semibold text-surface-900 group-hover:text-amber-700">
+              Reclamaciones Masivas
+            </h2>
+            <p className="mt-1 text-sm text-surface-500">
+              Gestiona tus reclamaciones masivas, sube documentacion y consulta el estado de tu caso.
+            </p>
+          </div>
+          <svg
+            className="h-6 w-6 shrink-0 text-surface-300 group-hover:text-amber-600 transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 4.5l7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </div>
+      </Link>
+
       {totalCases === 0 ? (
         <div className="rounded-2xl border border-surface-200/80 bg-white p-12 text-center">
           <svg
