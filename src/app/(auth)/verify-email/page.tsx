@@ -3,7 +3,6 @@
 import { Suspense, useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createBrowserClient } from "@supabase/ssr";
 import { SubmitButton, Alert } from "@/components/forms/AuthFields";
 
 function VerifyEmailContent() {
@@ -17,11 +16,6 @@ function VerifyEmailContent() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -101,13 +95,16 @@ function VerifyEmailContent() {
     setResending(true);
 
     try {
-      const { error: resendError } = await supabase.auth.resend({
-        type: "signup",
-        email,
+      const res = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
 
-      if (resendError) {
-        setError(resendError.message || "Error al reenviar el codigo.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Error al reenviar el codigo.");
       } else {
         setSuccess("Codigo reenviado. Revisa tu correo.");
       }
