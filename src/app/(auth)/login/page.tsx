@@ -11,7 +11,7 @@ import { OAuthButtons, OAuthDivider } from "@/components/forms/OAuthButtons";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/cases";
+  const next = searchParams.get("next") || "/hub";
   const registered = searchParams.get("registered");
   const callbackError = searchParams.get("error");
 
